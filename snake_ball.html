@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Ball</title>
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/arcade-classic');
+
+/* Not responsive yet */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #191919;
+    user-select: none;
+}
+
+:root{
+    --dim-visibility: hidden;
+    --blur-amount: 0;
+}
+.main-wrap{
+    width:310px;
+    height: 570px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    filter: blur(var(--blur-amount));
+}
+.score-wrap{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.score{
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 25px;
+    color: #F9D923;
+}
+.game-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border: 5px solid #F9D923;
+    border-radius: 15px;
+}
+
+#snake {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #187498;
+    border-radius: 50%;
+}
+.tail{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #36AE7C;
+    border-radius: 50%;
+}
+#food {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: #EB5353;
+    border-radius: 50%;
+}
+
+#start-btn{
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 50px;
+    color: #F9D923;
+    white-space: pre;
+    text-align: right;
+    cursor: pointer;
+}
+#start-btn:hover{
+  transform: scale(1.1);
+}
+
+.controller-wrap{
+    width: 300px;
+    height: 200px;
+    /* background: #EB5353; */
+    display: flex;
+    justify-content: space-between;
+}
+.move-con{
+    transform: translate(45px, 0);
+}
+.con{
+    position: absolute;
+    cursor: pointer;
+}
+.ctrl{
+    width: 50px;
+    height: 50px;
+    border: solid 3px #F9D923;
+    border-radius: 50%;
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 40px;
+    color: #F9D923;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.triangle{
+    width: 0;
+    height: 0;
+    border-left: 25px solid transparent;
+    border-right: 25px solid transparent;
+    border-top: 25px solid #F9D923;
+}
+.right{
+    transform: translate(45px, 45px);
+}
+.right:hover{
+    transform: translate(45px, 45px) scale(1.15);
+}
+.left{
+    transform: translate(-45px, 45px);
+}
+.left:hover{
+    transform: translate(-45px, 45px) scale(1.15);
+}
+.down{
+    transform: translate(0, 90px);
+}
+.down:hover{
+    transform: translate(0, 90px) scale(1.15);
+}
+.up:hover{
+    transform: scale(1.15);
+}
+
+.dim-box{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: #232323;
+    opacity: 0.85;
+    visibility: var(--dim-visibility);
+}
+.gameover-wrap{
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    visibility: var(--dim-visibility);
+}
+.gameover{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 100px;
+    text-align: center;
+    color: #F9D923;
+}
+.gameover-score{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 30px;
+    color: #F9D923;
+}
+.restart{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    transform: translateY(125px);
+    align-items: center;
+    font-family: 'ArcadeClassic', sans-serif;
+    font-size: 40px;
+    color: #F9D923;
+    width: 175px;
+    height: 50px;
+    border: solid 5px #F9D923;
+    cursor: pointer;
+}
+.restart:hover{
+    width: 177px;
+    height: 52px;
+}
+
+@media only screen and (max-width: 500px) {
+    .restart{
+        transform: translateY(160px);
+    }
+}
+
+    </style>
+</head>
+<body>
+    
+    <div class="main-wrap">
+        <div class="score-wrap">
+            <div class="score" id="score"></div>
+            <div class="score"  id="highscore"></div>
+        </div>
+        <div class="game-container">
+            <div class="tail-container"></div>
+            <div id="snake"></div>
+            <div id="food"></div>
+        </div>
+
+        <div class="controller-wrap">
+            <div class="move-con">
+                <div class="con up" onclick="onClickMove(1)">
+                    <div class="ctrl">U</div>
+                </div>
+                <div class="con down" onclick="onClickMove(2)">
+                    <div class="ctrl">D</div>
+                </div>
+                <div class="con left" onclick="onClickMove(3)">
+                    <div class="ctrl">L</div>
+                </div>
+                <div class="con right" onclick="onClickMove(4)">
+                    <div class="ctrl">R</div>
+                </div>
+            </div>
+            <div id="start-btn" class="start-btn" onclick="gameIntStart()">START</div>
+        </div>
+    </div>
+    <div class="dim-box"></div>
+    <div class="gameover-wrap">
+        <div class="gameover">GAME OVER</div>
+        <div class="gameover-score">30</div>
+        <div class="restart" onclick="gameStart()">RESTART</div>
+    </div>
+    
+<script>
+    const gameContainer = document.querySelector('.game-container');
+const snake = document.getElementById('snake');
+const food = document.getElementById('food');
+const scoreDisplay = document.getElementById('score');
+const hiscoreDisplay = document.getElementById('highscore');
+const tailContainer = document.querySelector('.tail-container');
+let snakeX = 0;
+let snakeY = 0;
+let foodX, foodY;
+let score = 0;
+let hiscore = 0;
+let direction = 'right';
+let speed = 200;
+let tail = [];
+let gameStarting = false;
+
+var root = document.querySelector(":root");
+
+function randomPosition() {
+    return Math.floor(Math.random() * 15) * 20;
+}
+
+function placeFood() {
+    foodX = randomPosition();
+    foodY = randomPosition();
+    food.style.left = foodX + 'px';
+    food.style.top = foodY + 'px';
+}
+
+function updateScore() {
+    scoreDisplay.textContent = `Score: ${score}`;
+}
+
+function updateHiScore(){
+    hiscoreDisplay.textContent = `Hi-Score: ${hiscore}`;
+}
+
+function gameOver() {
+    root.style.setProperty('--dim-visibility', "visible");
+    root.style.setProperty('--blur-amount', "2px");
+    document.querySelector(".gameover-score").textContent = "Your Score: " + score;
+}
+
+placeFood();
+updateScore();
+updateHiScore();
+
+document.addEventListener('keydown', (event) => {
+    if ((event.key === 'w' || event.key === 'ArrowUp') && direction !== 'down') {
+        direction = 'up';
+    } else if ((event.key === 's' || event.key === 'ArrowDown') && direction !== 'up') {
+        direction = 'down';
+    } else if ((event.key === 'a' || event.key === 'ArrowLeft') && direction !== 'right') {
+        direction = 'left';
+    } else if ((event.key === 'd' || event.key === 'ArrowRight') && direction !== 'left') {
+        direction = 'right';
+    }
+});
+
+function onClickMove(move) {
+    if (move == 1 && direction !== 'down') {
+        direction = 'up';
+    } else if (move == 2 && direction !== 'up') {
+        direction = 'down';
+    } else if (move == 3 && direction !== 'right') {
+        direction = 'left';
+    } else if (move == 4 && direction !== 'left') {
+        direction = 'right';
+    }
+}
+
+function gameLoop() {
+    tail.push({ x: snakeX, y: snakeY });
+
+    if (tail.length > score) {
+        tail.shift();
+    }
+
+    if (direction === 'up') {
+        snakeY -= 20;
+    } else if (direction === 'down') {
+        snakeY += 20;
+    } else if (direction === 'left') {
+        snakeX -= 20;
+    } else if (direction === 'right') {
+        snakeX += 20;
+    }
+
+    if (snakeX === foodX && snakeY === foodY) {
+        score++;
+        updateScore();
+        if (score > hiscore){
+          hiscore++;
+          updateHiScore();
+        }
+        placeFood();
+    }
+
+    if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= 300 ||
+        snakeY >= 300 ||
+        checkCollision()
+    ) {
+        gameOver();
+        return;
+    }
+
+    tailContainer.innerHTML = '';
+    for (let i = 0; i < tail.length; i++) {
+        const tailSegment = document.createElement('div');
+        tailSegment.className = 'tail';
+        tailSegment.style.left = tail[i].x + 'px';
+        tailSegment.style.top = tail[i].y + 'px';
+        tailContainer.appendChild(tailSegment);
+    }
+
+    snake.style.left = snakeX + 'px';
+    snake.style.top = snakeY + 'px';
+
+    setTimeout(gameLoop, speed);
+}
+
+function checkCollision() {
+    for (let i = 0; i < tail.length; i++) {
+        if (snakeX === tail[i].x && snakeY === tail[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function gameIntStart() {
+    if (gameStarting == false) {
+        gameStart();
+    }
+    else{
+        return
+    }
+} 
+
+function gameStart() {
+    gameStarting = true;
+    document.querySelector(".start-btn").textContent = "SNAKE\r\nGAME";
+    root.style.setProperty('--dim-visibility', "hidden");
+    root.style.setProperty('--blur-amount', "0");
+    snakeX = 0;
+    snakeY = 0;
+    foodX, foodY;
+    score = 0;
+    direction = 'right';
+    speed = 200;
+    tail = [];
+    updateScore();
+    gameLoop();
+}
+</script>
+</body>
+</html>
